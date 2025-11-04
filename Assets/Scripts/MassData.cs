@@ -26,6 +26,8 @@ public class MassData : MonoBehaviour {
     }
 
     private void SetDirection(Vector3 velocity) {
-        transform.rotation = Quaternion.LookRotation(velocity.normalized);
+        if (!velocity.Equals(Vector3.zero)) {
+            transform.rotation = Quaternion.LookRotation(velocity.normalized);
+        }
     }
 }

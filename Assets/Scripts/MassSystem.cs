@@ -11,19 +11,12 @@ public class MassSystem : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        ClearNetForces();
         CalculateNetForces();
         ApplyNetForces();
     }
 
-    private void ClearNetForces() {
-        for (int i = 0; i < netForces.Length; i++) {
-            netForces[i] = Vector3.zero;
-        }
-    }
-
     private void CalculateNetForces() {
-        float distance, forceMagnitude, forceDistanceRatio;
+        float distance;
         Vector3 force, distanceComponents;
         Transform mass1, mass2;
         MassData massData1, massData2;
@@ -44,12 +37,8 @@ public class MassSystem : MonoBehaviour {
 
                 massData1 = mass1.GetComponent<MassData>();
                 massData2 = mass2.GetComponent<MassData>();
-                
-                forceMagnitude = gravitationalConstant * massData1.mass * massData2.mass / (distance * distance);
 
-                forceDistanceRatio = forceMagnitude / distance;
-
-                force = distanceComponents * forceDistanceRatio;
+                force = distanceComponents * (gravitationalConstant * massData1.mass * massData2.mass / (distance * distance * distance));
 
                 netForces[i] += force;
                 netForces[j] -= force;
@@ -63,6 +52,7 @@ public class MassSystem : MonoBehaviour {
         for (int i = 0; i < numMasses; i++) {
             massData = transform.GetChild(i).GetComponent<MassData>();
             massData.MoveWithForce(netForces[i]);
+            netForces[i] = Vector3.zero;
         }
     }
 }

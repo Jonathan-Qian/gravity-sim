@@ -8,20 +8,39 @@ public class CameraMovement : MonoBehaviour {
     public float normalSpeed;
     public float sprintSpeed;
     private float currentSpeed;
-    
-    void Update() {
+    private bool freeCam;
+    public Transform ship;
+    public Vector3 offset;
+
+    void Start() {
+        freeCam = false;
+    }
+
+    void LateUpdate() {
         Movement();
 
-        if (Input.GetMouseButton(1)) {
-            Cursor.visible = false;
-            Cursor.lockState = CursorLockMode.Locked;
-            Rotation();
+        if (Input.GetKey(KeyCode.C)) {
+            freeCam = !freeCam;
+            Debug.Log(freeCam);
+        }
+
+        if (freeCam) {
+            if (Input.GetMouseButton(1)) {
+                Cursor.visible = false;
+                Cursor.lockState = CursorLockMode.Locked;
+                Rotation();
+            }
+            else {
+                Cursor.visible = true;
+                Cursor.lockState = CursorLockMode.None;
+            }
         }
         else {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
+            Vector3 cameraPosition = ship.TransformPoint(offset);
+            transform.position = cameraPosition;
+
+            transform.rotation = ship.transform.rotation;
         }
-        
     }
 
     public void Rotation() {
