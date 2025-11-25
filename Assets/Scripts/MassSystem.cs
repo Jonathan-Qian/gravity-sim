@@ -11,49 +11,44 @@ public class MassSystem : MonoBehaviour {
     }
 
     void FixedUpdate() {
-        CalculateNetForces();
-        ApplyNetForces();
+        CalculateAndApplyNetForces();
     }
 
-    private void CalculateNetForces() {
+    private void CalculateAndApplyNetForces() {
         float distance;
         Vector3 force, distanceComponents;
         Transform mass1, mass2;
         MassData massData1, massData2;
 
-        // for each pair 0 <= i < j < numMasses
-        for (int i = 0; i < numMasses - 1; i++) {
+        // for each pair i, j where 0 <= i < j < numMasses
+        // according to the definition of i and j above, the
+        // outer loop should go from i = 0 to i = numMasses - 2,  
+        // but in order to call MoveWithForce() on the last
+        // element, we will go from i = 0 to i = numMasses - 1
+        for (int i = 0; i < numMasses; i++) {
             mass1 = transform.GetChild(i);
+            massData1 = mass1.GetComponent<MassData>();
 
             for (int j = i + 1; j < numMasses; j++) {
                 mass2 = transform.GetChild(j);
+                massData2 = mass2.GetComponent<MassData>();
 
                 distanceComponents = mass2.position - mass1.position;
-
                 distance = Mathf.Sqrt(
                     distanceComponents.x * distanceComponents.x +
                     distanceComponents.y * distanceComponents.y +
                     distanceComponents.z * distanceComponents.z
                 );
 
-                massData1 = mass1.GetComponent<MassData>();
-                massData2 = mass2.GetComponent<MassData>();
-
-                force = distanceComponents * (gravitationalConstant * massData1.mass * massData2.mass / (distance * distance * distance));
+                // F_x,y,z = (d_x,y,z / d) * (G * m1 * m2 / d^2) = d_x,y,z * G * m1 * m2 / d^3
+                force = distanceComponents * gravitationalConstant * massData1.mass * massData2.mass / (distance * distance * distance);
 
                 netForces[i] += force;
                 netForces[j] -= force;
             }
-        }
-    }
 
-    private void ApplyNetForces() {
-        MassData massData;
-
-        for (int i = 0; i < numMasses; i++) {
-            massData = transform.GetChild(i).GetComponent<MassData>();
-            massData.MoveWithForce(netForces[i]);
-            netForces[i] = Vector3.zero;
+            massData1.MoveWithForce(netForces[i]);
+            netForces[i] = Vector3.zero; // clear net force for next iteration
         }
     }
 }
