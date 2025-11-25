@@ -21,7 +21,8 @@ public class MassSystem : MonoBehaviour {
         Transform mass1, mass2;
         MassData massData1, massData2;
 
-        for (int i = 0; i < numMasses; i++) {
+        // for each pair 0 <= i < j < numMasses
+        for (int i = 0; i < numMasses - 1; i++) {
             mass1 = transform.GetChild(i);
 
             for (int j = i + 1; j < numMasses; j++) {
