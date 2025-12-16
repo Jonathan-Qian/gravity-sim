@@ -20,7 +20,7 @@ public class MassSystem : MonoBehaviour {
         Transform mass1, mass2;
         MassData massData1, massData2;
 
-        // for each pair i, j where 0 <= i < j < numMasses
+        // for each pair i, j where 0 <= i < j < numMasses - 1
         // according to the definition of i and j above, the
         // outer loop should go from i = 0 to i = numMasses - 2,  
         // but in order to call MoveWithForce() on the last
